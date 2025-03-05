@@ -25,6 +25,14 @@ func main() {
 
 	// fmt.Print("Hello World")
 
+	txt1 := "Hello!"
+	txt2 := ""
+	txt3 := "World 1"
+
+	fmt.Printf("Type: %T, value: %v\n", txt1, txt1)
+	fmt.Printf("Type: %T, value: %v\n", txt2, txt2)
+	fmt.Printf("Type: %T, value: %v\n", txt3, txt3)
+
 	//conditional statment in golang
 	// we have if and switch
 	age := 20
