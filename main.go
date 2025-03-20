@@ -1,80 +1,90 @@
+// Concurrency in Go
+// Concurrency in Go is achieved by using goroutines.
+//  A goroutine is a lightweight thread managed by the Go runtime.
+//   It is a function that runs concurrently with other functions. G
+//   oroutines are created by using the go keyword followed by a function invocation.
+//    The following example demonstrates how to create a goroutine:
+
 package main
 
 import (
 	"fmt"
+	"sync"
+	"time"
 )
 
-type Student struct {
-	name       string
-	department string
-	age        int
-	grade      int
-	height     float32
-	College
+func connecttodatabase() (bool, error) {
+	fmt.Println("Connecting to the database")
+	time.Sleep(2 * time.Second)
+	fmt.Println("Connected to the database")
+	return true, nil
 }
 
-type College struct {
-	CollegeName        string
-	CollegeLocation    string
-	CollegePhoneNumber int64
-	StudentNumber      int
-}
-
-// Method
-func (s Student) GetStudentInfo() {
-	fmt.Print(s.name, "is reading")
-}
-
-func (s Student) CopyStudentInfo(Student Student) {
-	fmt.Print(s.name, "is Copying ", Student.name)
-}
-
-func (a College) GetCollegeName() string {
-	return a.CollegeName
-}
-
-func NewStudent(name string, Department string, age int, grade int, height float32,
-	collegename string, collegelocation string, collegephonenumber int64, studentumber int) Student {
-	student := Student{
-		name:       name,
-		department: Department,
-		age:        age,
-		grade:      grade,
-		height:     height,
-		College: College{
-			CollegeName:        collegename,
-			CollegeLocation:    collegelocation,
-			CollegePhoneNumber: collegephonenumber,
-			StudentNumber:      studentumber,
-		},
-	}
-	return student
-
+func ConnectThirdPartyAPI() (bool, error) {
+	fmt.Println("Connecting to the third party API")
+	time.Sleep(2 * time.Second)
+	fmt.Println("Connected to the third party API")
+	return true, nil
 }
 
 func main() {
 
-	colleges := []College{
-		{CollegeName: "NEC College", CollegeLocation: "", CollegePhoneNumber: 0, StudentNumber: 322},
-		{CollegeName: "KEC College", CollegeLocation: "", CollegePhoneNumber: 0, StudentNumber: 12},
-		{CollegeName: "Pulchoki College", CollegeLocation: "", CollegePhoneNumber: 0, StudentNumber: 322},
-		{CollegeName: "Cosmos College", CollegeLocation: "", CollegePhoneNumber: 0, StudentNumber: 121},
-	}
+	//multi threading
 
-	// Initialize map
-	//var CollegeStudentNumber = map[string]int{}
-	CollegeStudentNumber := make(map[string]int)
-	for _, college := range colleges {
-		CollegeStudentNumber[college.CollegeName] = college.StudentNumber
-	}
+	wg := sync.WaitGroup{}
 
-	studentInNEC, hasValue := CollegeStudentNumber[" College"]
-	if !hasValue {
-		fmt.Println("NEC College is not in the list")
-	} else {
-		fmt.Println("Number of students in NEC College:", studentInNEC)
-	}
+	timeStart := time.Now()
+	wg.Add(1)
+	go func() {
+		status, _ := connecttodatabase()
+		fmt.Println("Status ", status)
+		wg.Done()
+	}()
+	wg.Add(1)
+	go func() {
 
-	studentInNEC = CollegeStudentNumber["KEC College"]
-	fmt.Println("Number of students in KEC College:", studentInNEC)
+		status, _ := connecttodatabase()
+		fmt.Println("Status ", status)
+		wg.Done()
+	}()
+	wg.Add(1)
+	go func() {
+		status, _ := connecttodatabase()
+		fmt.Println("Status ", status)
+		wg.Done()
+	}()
+
+	// if err != nil {
+	// 	fmt.Println("error connecting to the database")
+	// 	return
+	// }
+
+	// status, err := connecttodatabase()
+	// if err != nil {
+	// 	fmt.Println("error connecting to the database")
+	// 	return
+	// }
+
+	// if !status {
+	// 	fmt.Println("database connection failed")
+	// 	return
+	// }
+
+	// //connect to third party API
+
+	// thirdpartystatus, _ := ConnectThirdPartyAPI()
+	// // if thirdpartyerror != nil {
+	// // 	fmt.Println("error connecting to the third party API")
+	// // 	return
+	// // }
+
+	// if !thirdpartystatus {
+	// 	fmt.Println("third party API connection failed")
+	// 	return
+	// }
+
+	// fmt.Println("All Services connected successfully")
+	wg.Wait()
+	elapsed := time.Since(timeStart)
+	fmt.Printf("Time taken: %s\n", elapsed)
 }

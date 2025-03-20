@@ -155,7 +155,7 @@ func main() {
 
 	fmt.Println(student11.College.CollegeLocation)
 
-	student11.GetCollegeName()
+	fmt.Println(student11.GetCollegeName())
 
 	ages := AgeStudent("ram", "computer", 27, 40, 33.3)
 	fmt.Println(ages)
