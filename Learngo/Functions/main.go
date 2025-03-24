@@ -109,6 +109,12 @@ func main() {
 	//Slices  and Array
 	//list dynamic increase size
 
+	name := make([]string, 5, 5) //static define the size if array
+	name[0] = "abc"
+	name = append(name, "bcd")
+	name = append(name, "testname")
+	fmt.Println(name)
+
 	var names []string = []string{}
 	names = append(names, "Maheshwor")
 	names = append(names, "Shakha")
@@ -116,6 +122,8 @@ func main() {
 
 	fmt.Println(names)
 	fmt.Println(len(names))
+
+	fmt.Println("only  sliced", names[1:])
 
 	//looping
 
@@ -127,7 +135,25 @@ func main() {
 		fmt.Println(names[i])
 	}
 
+	// array
+
+	var nums [2]int
+	nums = [2]int{1, 2}
+	fmt.Println(nums)
+
+	nuum := [3]int{1, 4, 5}
+	fmt.Println(nuum)
+
 	var numbers []int = []int{1, 2, 3, 5}
+
+	for i := 0; i < len(numbers); i++ {
+		fmt.Println(numbers[i])
+	}
+
+	for _, value := range numbers {
+		fmt.Println(value)
+	}
+
 	for ind := range numbers {
 
 		numbers[ind] += 1
