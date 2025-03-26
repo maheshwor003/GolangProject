@@ -6,9 +6,39 @@ import "fmt"
 type LaptopRepair interface {
 	Repair() string
 }
+type geometry interface {
+	area() float64
+	perimeter() float64
+}
+
+type square struct {
+	side float64
+}
+type rect struct {
+	lenght, breath float64
+}
+
+func (r rect) area() float64 {
+	return r.breath * r.lenght
+}
+func (r rect) perimeter() float64 {
+	return r.breath + r.lenght
+}
+func (s square) area() float64 {
+	return s.side * s.side
+}
+
+func (s square) perimeter() float64 {
+	return s.side + s.side
+}
 
 func Shop(repairer LaptopRepair) string {
 	return repairer.Repair()
+}
+
+func measure(g geometry) {
+	fmt.Println(g.area())
+	fmt.Println(g.perimeter())
 }
 
 // Define a struct that implements the interface
@@ -51,4 +81,14 @@ func main() {
 	fmt.Println(status)
 	status2 := Shop(farmer1)
 	fmt.Println(status2)
+
+	s := square{side: 10.0}
+	fmt.Println("Area of Square", s.area())
+	measure(s)
+
+	r := rect{lenght: 2, breath: 5}
+	fmt.Println("Area of Rectangle", r.area())
+	fmt.Println("Perimeter of Rectangle", r.perimeter())
+	measure(r)
+
 }

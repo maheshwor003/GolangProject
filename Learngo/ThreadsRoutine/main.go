@@ -13,6 +13,16 @@ import (
 	"time"
 )
 
+func printHello(wg *sync.WaitGroup) {
+	defer wg.Done() //this method will call at the end of logic
+	fmt.Println("Hello")
+}
+
+func printHelloAgain(wg *sync.WaitGroup) {
+	defer wg.Done() //this method will call at the end of logic
+	fmt.Println("Hello world ")
+}
+
 func connecttodatabase() (bool, error) {
 	fmt.Println("Connecting to the database")
 	time.Sleep(2 * time.Second)
@@ -30,61 +40,70 @@ func ConnectThirdPartyAPI() (bool, error) {
 func main() {
 
 	//multi threading
+	// printHello()
+	// go printHelloAgain()
+	// time.Sleep(3 * time.Second)
 
-	wg := sync.WaitGroup{}
+	var wg sync.WaitGroup //for waiting for go routines to execute
+	wg.Add(2)             //to tell how many go routines are there
 
+	go printHelloAgain(&wg)
+	go printHello(&wg)
+	wg.Wait() // to tell main function to wait unitl go routines are done with  execution
+
+	ws := sync.WaitGroup{}
 	timeStart := time.Now()
-	wg.Add(1)
+	ws.Add(1)
 	go func() {
 		status, _ := connecttodatabase()
 		fmt.Println("Status ", status)
-		wg.Done()
+		ws.Done()
 	}()
-	wg.Add(1)
+	ws.Add(1)
 	go func() {
 
 		status, _ := connecttodatabase()
 		fmt.Println("Status ", status)
 		wg.Done()
 	}()
-	wg.Add(1)
+	ws.Add(1)
 	go func() {
 		status, _ := connecttodatabase()
 		fmt.Println("Status ", status)
-		wg.Done()
+		ws.Done()
 	}()
 
 	// if err != nil {
-	// 	fmt.Println("error connecting to the database")
+	// 	fmt.Printf("Error connecting to the database: %v\n", err)
 	// 	return
 	// }
 
-	// status, err := connecttodatabase()
-	// if err != nil {
-	// 	fmt.Println("error connecting to the database")
+	status, err := connecttodatabase()
+	if err != nil {
+		fmt.Println("error connecting to the database")
+		return
+	}
+
+	if !status {
+		fmt.Println("database connection failed")
+		return
+	}
+
+	//connect to third party API
+
+	thirdpartystatus, _ := ConnectThirdPartyAPI()
+	// if thirdpartyerror != nil {
+	// 	fmt.Println("error connecting to the third party API")
 	// 	return
 	// }
 
-	// if !status {
-	// 	fmt.Println("database connection failed")
-	// 	return
-	// }
+	if !thirdpartystatus {
+		fmt.Println("third party API connection failed")
+		return
+	}
 
-	// //connect to third party API
-
-	// thirdpartystatus, _ := ConnectThirdPartyAPI()
-	// // if thirdpartyerror != nil {
-	// // 	fmt.Println("error connecting to the third party API")
-	// // 	return
-	// // }
-
-	// if !thirdpartystatus {
-	// 	fmt.Println("third party API connection failed")
-	// 	return
-	// }
-
-	// fmt.Println("All Services connected successfully")
-	wg.Wait()
+	fmt.Println("All Services connected successfully")
+	ws.Wait()
 	elapsed := time.Since(timeStart)
 	fmt.Printf("Time taken: %s\n", elapsed)
 }
